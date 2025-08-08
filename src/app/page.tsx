@@ -140,9 +140,9 @@ export default function Home() {
                 <span className="en animated wow fadeIn">about</span>
                 <span className="ja">私について</span>
               </h2>
-              <figure className={`{ ${styles.deco} ${styles.deco_01}`}><img src="/home/deco_01.svg" alt="" /></figure>
-              <figure className={`{ ${styles.deco} ${styles.deco_02}`}><img src="/home/deco_02.svg" alt="" /></figure>
-              <figure className={`${styles.icon} js-rellax`}data-rellax-speed="3" data-rellax-percentage="0.5" data-rellax-zindex="5"><img
+              <figure className={`{ ${styles.deco} ${styles.deco_01} deco`}><img src="/home/deco_01.svg" alt="" /></figure>
+              <figure className={`{ ${styles.deco} ${styles.deco_02} deco`}><img src="/home/deco_02.svg" alt="" /></figure>
+              <figure className={`${styles.icon} icon`}><img
                   src="/home/deco_icon_01.svg" alt="" /></figure>
               <div className={styles.about__container}>
                 <figure className={styles.about__image}><img src="/home/about_01.png" alt="私について" /></figure>
@@ -187,9 +187,9 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <figure className={`${styles.deco} ${styles.deco_01}`}><img src="/home/deco_04.svg" alt="" /></figure>
-                <figure className={`${styles.deco} ${styles.deco_02}`}><img src="/home/deco_05.svg" alt="" /></figure>
-                <figure className={`${styles.icon} js-rellax`} data-rellax-speed="3" data-rellax-percentage="0.5" data-rellax-zindex="5">
+                <figure className={`${styles.deco} ${styles.deco_01} deco`}><img src="/home/deco_04.svg" alt="" /></figure>
+                <figure className={`${styles.deco} ${styles.deco_02} deco`}><img src="/home/deco_05.svg" alt="" /></figure>
+                <figure className={`${styles.icon} icon`}>
                   <img src="/home/deco_icon_02.svg" alt="" />
                 </figure>
               </div>
@@ -257,10 +257,10 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <figure className={`${styles.deco} ${styles.deco_01}`}><img src="/home/deco_06.svg" alt="" /></figure>
-              <figure className={`${styles.deco} ${styles.deco_02}`}><img src="/home/deco_07.svg" alt="" /></figure>
-              <figure className={`${styles.deco} ${styles.deco_03}`}><img src="/home/deco_08.svg" alt="" /></figure>
-              <figure className={`${styles.icon} js-rellax`} data-rellax-speed="3" data-rellax-percentage="0.5" data-rellax-zindex="5"><img
+              <figure className={`${styles.deco} ${styles.deco_01} deco`}><img src="/home/deco_06.svg" alt="" /></figure>
+              <figure className={`${styles.deco} ${styles.deco_02} deco`}><img src="/home/deco_07.svg" alt="" /></figure>
+              <figure className={`${styles.deco} ${styles.deco_03} deco`}><img src="/home/deco_08.svg" alt="" /></figure>
+              <figure className={`${styles.icon} icon`}><img
                   src="/home/deco_icon_03.svg" alt="" /></figure>
             </div>
           </div>
