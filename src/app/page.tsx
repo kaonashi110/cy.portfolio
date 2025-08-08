@@ -47,24 +47,28 @@ export default function Home() {
     {
       href: "https://kaonashi110.github.io/portfolio/",
       imgSrc: "/home/works_01.png",
-      alt: "ポートフォリオ",
       caption: "ポートフォリオ",
+      title: "ポートフォリオサイト",
       styleClass: styles.web,
-      category: "Webアプリ",
-      period: "10時間",
-      use: "HTML",
-      link: "sample.com"
+      category: "Webサイト",
+      period: "2週間",
+      use: "Next.js／TypeScript／SCSS",
+      link: "https://cyportfolio2025.netlify.app/",
+      linkMock: "",
+      linkSlide: "",
     },
     {
       href: "",
       imgSrc: "/home/works_02.png",
-      alt: "お天気アプリ",
-      caption: "お天気アプリ",
+      caption: "MY Panel",
+      title: "MY Panel",
       styleClass: styles.app,
       category: "Webアプリ",
-      period: "10時間",
-      use: "HTML",
-      link: ""
+      period: "1ヶ月（制作中）",
+      use: "Next.js／TypeScript／SCSS",
+      link: "",
+      linkMock: "https://www.figma.com/design/LsYDfFYFiVgVscd64yGH0Z/MYPanel_webapp_2025.08?node-id=0-1&t=pOPmASZbvMsOrV7u-1",
+      linkSlide: "https://www.figma.com/proto/aj2N3E9axqmP89E0MasuKV/Slide_MYPanel_webapp_2025.08?t=pOPmASZbvMsOrV7u-0&scaling=contain&content-scaling=fixed&page-id=0%3A1&node-id=5-3"
     },
   ];
 
@@ -235,9 +239,11 @@ export default function Home() {
                           openModal(idx);
                         }}
                       >
-                        <figure>
-                          <img src={work.imgSrc} alt={work.alt} />
-                        </figure>
+                        <div className={styles.image}>
+                          <figure>
+                            <img src={work.imgSrc} alt={work.caption} />
+                          </figure>
+                        </div>
                         <p className={`${styles.caption} boxShadow`}>{work.caption}</p>
                       </a>
                     </div>
