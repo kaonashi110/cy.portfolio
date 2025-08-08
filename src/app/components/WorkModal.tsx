@@ -4,24 +4,40 @@ import Modal from 'react-modal';
 import "./WorkModalLib.scss";
 import styles from "./WorkModal.module.scss"
 
-const WorkModal = ({ 
+type Work = {
+  title: string;
+  imgSrc: string;
+  category: string;
+  period: string;
+  use: string;
+  link?: string;
+  linkMock?: string;
+  linkSlide?: string;
+};
+
+type WorkModalProps = {
+  isOpen: boolean;
+  onRequestClose: () => void;
+  work?: Work | null;
+};
+
+const WorkModal: React.FC<WorkModalProps> = ({
   isOpen,
   onRequestClose,
   work,
 }) => {
-  if (!work) return null; // workがないときは何も表示しない
-
+  if (!work) return null;
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       contentLabel="Work Modal"
-      ariaHideApp={false} // 本番環境ではrootに設定推奨
+      ariaHideApp={false}
     >
       <button onClick={onRequestClose}><span></span></button>
       <div className={styles.container}>
         <h2 className={styles.title}>{work.title}</h2>
-        <figure className={styles.image}><img src={work.imgSrc} alt={work.alt} /></figure>
+        <figure className={styles.image}><img src={work.imgSrc} alt={work.title} /></figure>
         <div className={styles.detail}>
           <p className={styles.category}>{work.category}</p>
           <dl className={styles.text}>
