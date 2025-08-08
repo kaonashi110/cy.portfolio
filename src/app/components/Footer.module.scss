@@ -1,0 +1,66 @@
+// @use "../styles/_variables" as *;
+
+.footer {
+  color: #fff;
+  text-align: center;
+  padding: 30px;
+  background: linear-gradient(-135deg, $color05 0%, $color04 50%, #fff 100%);
+  &__top {
+    text-align: right;
+    padding-right: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  &__top a {
+    display: inline-block;
+    transform: translateY(250%);
+    position: fixed;
+    bottom: 50px;
+  }
+  &__top a span {
+    width: 60px;
+    aspect-ratio: 1/1;
+    border: 1px solid $color05;
+    border-radius: 50%;
+    background-color: #fff;
+    display: inline-block;
+    position: relative;
+    rotate: -90deg;
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      left: 40%;
+      width: 13px;
+      height: 2px;
+      border-radius: 9999px;
+      background-color: #024873;
+      transform-origin: 100% 50%;
+      transition: all 0.3s;
+    }
+    &::before {
+      transform: rotate(40deg);
+    }
+    &::after {
+      transform: rotate(-40deg);
+    }
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .footer {
+    &__top a:hover {
+      opacity: 1;
+    }
+    &__top a:hover span {
+        border-color: $color04;
+      }
+    &__top a:hover span::before,
+    &__top a:hover span::after {
+      left: 48%;
+    }
+  }
+}

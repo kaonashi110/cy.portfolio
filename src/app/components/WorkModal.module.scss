@@ -1,0 +1,52 @@
+.container {
+  padding: 50px 0;
+}
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  &::after {
+    content: "";
+    width: 60px;
+    height: 1px;
+    background-color: $textColor;
+    display: block;
+    margin: 20px auto;
+  }
+}
+.image {
+  margin: 50px auto 0;
+  border-radius: 20px;
+  border: 0.5px solid $textColor;
+  overflow: hidden;
+  @media screen and (min-width: 769px) {
+    width: 80%;
+  }
+}
+.detail {
+  padding: 0 20px;
+  @media screen and (min-width: 769px) {
+    max-width: 80%;
+    margin: 0 auto;
+  }
+}
+.category {
+  font-size: 20px;
+  margin-top: 40px;
+}
+.text {
+  margin-top: 30px;
+  dt {
+    font-size: 16px;
+    font-weight: 600;
+    color: $color03;
+    margin-top: 30px;
+  }
+  dd {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  a {
+    text-decoration: underline;
+  }
+}

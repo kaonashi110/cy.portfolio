@@ -1,0 +1,48 @@
+// @use "../styles/_variables" as *;
+
+.header {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+  height: 80px;
+  transform: translateY(-100%);
+  transition: .5s ease-out;
+  &__inner {
+    background-color: rgba(255, 255, 255, 0.7);
+    height: 100%;
+  }
+  &__inner .container {
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &__logo figure {
+    width: 90px;
+  }
+  &__nav ul {
+    display: flex;
+    justify-content: space-between;
+    gap: 60px;
+  }
+  &__nav ul > li {
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+  }
+}
+@media screen and (max-width: 992px) {
+.header__nav  {
+  ul {
+    gap: 10px;
+    > li {
+      font-size: 14px;
+    }
+  }
+}
+}
+@media screen and (min-width: 992px) {
+  .header__nav ul > li a:hover {
+    color: $color03;
+  }
+}
