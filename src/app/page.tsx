@@ -74,8 +74,8 @@ export default function Home() {
 
   // モーダル
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(null);
-  const openModal = (index) => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const openModal = (index: number) => {
     setActiveIndex(index);
     setModalIsOpen(true);
   };
