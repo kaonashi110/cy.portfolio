@@ -125,7 +125,7 @@ export default function Home() {
     <>
       <section className={styles.hero}>
         <div className={styles.hero__container}>
-          <h1 className={`${styles.hero__title} js-text-popup anim-text-popup`}>Chisaki's&nbsp;Portfolio</h1>
+          <h1 className={`${styles.hero__title} js-text-popup anim-text-popup`}>Chisaki&apos;s&nbsp;Portfolio</h1>
           <p id="a" className={styles.hero__lead}>Front-End Developer</p>
         </div>
       </section>
@@ -151,10 +151,12 @@ export default function Home() {
                   <p className={styles.info_lead}>
                     大阪生まれ兵庫育ち。<br /><br />
                     ショップ店員からWeb業界へ転職。<br />
-                    Web制作会社で2年間マークアップエンジニアを経験し、<br />よりフロントエンドのスキルを磨くために勉強中。<br /><br />
-                    “<span className="em">ユーザビリティの高いデザイン</span>”、<br />
-                    “<span className="em">ちょっとワクワクする仕掛け</span>”を実装したい。<br /><br />
-                    特技は料理、趣味は音楽とアニメとゲームとお酒。
+                    Web制作会社で2年間マークアップエンジニアを経験し、<br />よりフロントエンドのスキルを磨くために勉強中です。<br /><br />
+                    バグがないコードを書けることはもちろんですが<br />
+                    “<span className="em">ユーザビリティの高いデザイン</span>”<br />
+                    “<span className="em">ちょっとワクワクする仕掛け</span>”<br />
+                    の提案もできるエンジニアになりたいと思っています。<br /><br />
+                    特技は料理、趣味は音楽とアニメとゲームとお酒を飲むことです。
                   </p>
                 </div>
               </div>
