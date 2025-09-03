@@ -2,7 +2,9 @@
 import styles from "./styles/Home.module.scss"
 import ScrollDown from "./components/ScrollDown";
 import WorkModal from "./components/WorkModal";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
 
@@ -263,6 +265,23 @@ export default function Home() {
           </div>
         </section>
         {/* <!-- // .works --> */}
+
+        <section id="contact" className={styles.contact}>
+          <div className="inner animated wow fadeIn">
+            <div className="wrapper">
+                <h2 className="titleType01 wow fadeInUp">
+                  <span className="en animated wow fadeIn">contact</span>
+                  <span className="ja">連絡先</span>
+                </h2>
+                <div className={styles.contact__container}>
+                  <Link href="mailto:ito.job926@gmail.com">
+                    <Image className={styles.contact__icon} src="/home/contact.svg" width={100} height={100} alt="" />
+                  </Link>
+                </div>
+            </div>
+          </div>
+        </section>
+        {/* <!-- //.contact --> */}
       </article>
     </>
   );
