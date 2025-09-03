@@ -4,7 +4,6 @@ import "./globals.scss";
 import "./styles/reset.css";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import { useEffect } from "react";
 
 const notoSans = Noto_Sans_JP({
   variable: "--font-noto-sans",
@@ -22,8 +21,8 @@ const saira = Saira({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio | Chisaki Yamamoto",
-  description: "山本千咲のポートフォリオサイトです。",
+  title: "Portfolio | Chisaki.Y",
+  description: "Chisaki.Yのポートフォリオサイトです。",
   viewport: "width=device-width, initial-scale=1.0",
 };
 

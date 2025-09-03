@@ -54,7 +54,7 @@ export const Footer = () => {
       <footer className={styles.footer}>
         <div className="wrapper">
           <div className={styles.footer__top}><a id="pageTop" href="" className={isShow ? 'is-show' : ''}><span></span></a></div>
-          <p className={styles.footer__copy}>&copy; Chisaki Yamamoto</p>
+          <p className={styles.footer__copy}>&copy; Chisaki.Y</p>
         </div>
       </footer>
     </>
