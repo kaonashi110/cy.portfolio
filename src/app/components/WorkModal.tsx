@@ -41,23 +41,23 @@ const WorkModal: React.FC<WorkModalProps> = ({
         <div className={styles.detail}>
           <p className={styles.category}>{work.category}</p>
           <dl className={styles.text}>
-            <dt>制作期間</dt><dd>{work.period}</dd>
-            <dt>使用言語</dt><dd>{work.use}</dd>
+            <dt>◆ 制作期間</dt><dd>{work.period}</dd>
+            <dt>◆ 使用言語</dt><dd>{work.use}</dd>
             {work.link && (
               <>
-                <dt>リンク</dt>
+                <dt>◆ リンク</dt>
                 <dd><a href={work.link} target="_blank" rel="noopener noreferrer">{work.link}</a></dd>
               </>
             )}
             {work.linkMock && (
               <>
-                <dt>デザイン</dt>
+                <dt>◆ デザイン</dt>
                 <dd><a href={work.linkMock} target="_blank" rel="noopener noreferrer">{work.linkMock}</a></dd>
               </>
             )}
             {work.linkSlide && (
               <>
-                <dt>資料</dt>
+                <dt>◆ 資料</dt>
                 <dd><a href={work.linkSlide} target="_blank" rel="noopener noreferrer">{work.linkSlide}</a></dd>
               </>
             )}
