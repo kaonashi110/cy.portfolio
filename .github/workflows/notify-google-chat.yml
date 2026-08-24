@@ -1,24 +1,48 @@
 # .github/workflows/notify-google-chat.yml
 #
-# PRのイベントをGoogle Chatへ通知する。
-# threadKey に "pr-<PR番号>" を使うため、1つのPRに関する通知はすべて
-# 同じスレッドにまとまる（作成 → 確認依頼 → 承認 → マージ）。
+# PM確認が必要なPRのイベントをGoogle Chatへ通知する。
 #
-# 事前準備:
-#   1. Google Chat のスペース → アプリと連携 → Webhook で URL を発行
-#   2. GitHub リポジトリの Settings → Secrets and variables → Actions に
-#      GOOGLE_CHAT_WEBHOOK_URL として登録
+# ■ 仕様
+#   1. pm-review ラベルが付いているPRだけを通知する（オプトイン方式）
+#   2. 確認依頼のタイミングでは PM を @メンションする
+#   3. 同じPRのイベントはすべて同じスレッドに投稿する（threadKey = pr-<PR番号>）
 #
-# 注意:
+# ■ 事前準備
+#   1. ラベルを作成
+#        gh label create pm-review --description "PM確認依頼" --color 0E8A16
+#
+#   2. Google Chat のスペース → アプリと連携 → Webhook で URL を発行し、
+#      Actions Secrets に GOOGLE_CHAT_WEBHOOK_URL として登録
+#        gh secret set GOOGLE_CHAT_WEBHOOK_URL --body "<発行されたURL>"
+#
+#   3. メンション対象PMの数値ユーザーIDを Actions Variables に登録（カンマ区切り）
+#        gh variable set PM_USER_IDS --body "111111111111111111111,222222222222222222222"
+#
+#      ・IDの調べ方: Google 管理コンソール → ディレクトリ → ユーザー → 対象ユーザーを開く。
+#        URL末尾の数字列がそのユーザーのIDです。
+#      ・Webhook からの投稿ではメールアドレス形式（users/xxx@example.com）は使えません。
+#        メール形式はユーザー認証を行うアプリのみが利用できるため、数値IDを使います。
+#      ・スペース全員に通知してよい場合は  PM_USER_IDS=all  と設定すると <users/all> になります。
+#      ・未設定でも動作します（メンション無しで通知のみ）。
+#      ・メンション対象者がそのスペースのメンバーでないと通知は届きません。
+#
+# ■ 通知されないPR
+#   - pm-review ラベルが無いPR
+#   - draft のPR（ready_for_review にした時点で通知）
+#
+# ■ 注意
 #   - スペースがスレッド対応（in-line threaded）である必要がある。
 #     2022年以前の古いグループ会話など UNTHREADED のスペースでは threadKey が無視される。
 #   - fork からのPRでは Secrets が渡されないため通知されない（社内リポジトリでは影響なし）。
+#   - `opened` と `labeled` の両方を購読している。ラベルを後から付けても通知が届く一方、
+#     PR作成時に同時にラベルを付けた場合（gh pr create --label pm-review など）は
+#     同じスレッドに2件並ぶことがある。「PRを作成 → ラベルを付ける」の順なら常に1件。
 
 name: Notify Google Chat (PR)
 
 on:
   pull_request:
-    types: [opened, ready_for_review, review_requested, closed]
+    types: [opened, labeled, ready_for_review, review_requested, closed]
   pull_request_review:
     types: [submitted]
 
@@ -28,14 +52,20 @@ permissions:
 jobs:
   notify:
     runs-on: ubuntu-latest
-    # 下書き(draft)のPRは通知しない。ready_for_review で初回通知する。
+    # 1. pm-review ラベルが付いている
+    # 2. draft ではない（ready_for_review 時点で draft は false になる）
+    # 3. labeled イベントの場合、付けられたラベルが pm-review である
+    #    （他のラベルを付けただけで通知が飛ぶのを防ぐ）
     if: >-
-      github.event.pull_request.draft == false ||
-      github.event.action == 'ready_for_review'
+      contains(github.event.pull_request.labels.*.name, 'pm-review')
+      && github.event.pull_request.draft == false
+      && (github.event.action != 'labeled'
+          || github.event.label.name == 'pm-review')
     steps:
       - name: Post to Google Chat thread
         env:
           WEBHOOK:      ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+          PM_USER_IDS:  ${{ vars.PM_USER_IDS }}
           EVENT_NAME:   ${{ github.event_name }}
           ACTION:       ${{ github.event.action }}
           PR_NUM:       ${{ github.event.pull_request.number }}
@@ -49,12 +79,23 @@ jobs:
         run: |
           set -euo pipefail
 
+          # ---- イベントごとの見出しと、PMをメンションするかどうかを決める ----
+          # MENTION_PM=1 のイベントだけPMを呼び出す。
+          # 承認・マージ・クローズでは呼ばない（毎回通知するとメンションが軽くなるため）。
+          MENTION_PM=0
+
           case "${EVENT_NAME}.${ACTION}" in
-            pull_request.opened|pull_request.ready_for_review)
-              HEAD="新規PR（作成者: ${PR_AUTHOR}）"
+            pull_request.opened|pull_request.labeled)
+              HEAD="PM確認依頼（作成者: ${PR_AUTHOR}）"
+              MENTION_PM=1
+              ;;
+            pull_request.ready_for_review)
+              HEAD="PM確認依頼（レビュー可能になりました）"
+              MENTION_PM=1
               ;;
             pull_request.review_requested)
               HEAD="確認依頼 → ${REQUESTED} さん"
+              MENTION_PM=1
               ;;
             pull_request.closed)
               if [ "${PR_MERGED}" = "true" ]; then
@@ -76,7 +117,27 @@ jobs:
               ;;
           esac
 
-          TEXT=$(printf '*%s*\nPR #%s %s\n%s' "${HEAD}" "${PR_NUM}" "${PR_TITLE}" "${PR_URL}")
+          # ---- メンション文字列を組み立てる ----
+          MENTION=""
+          if [ "${MENTION_PM}" = "1" ] && [ -n "${PM_USER_IDS:-}" ]; then
+            IFS=',' read -ra IDS <<< "${PM_USER_IDS}"
+            for id in "${IDS[@]}"; do
+              id="$(printf '%s' "${id}" | tr -d '[:space:]')"
+              if [ -n "${id}" ]; then
+                MENTION="${MENTION}<users/${id}> "
+              fi
+            done
+          fi
+
+          # ---- 本文を組み立てて送信 ----
+          if [ -n "${MENTION}" ]; then
+            TEXT=$(printf '%s\n*%s*\nPR #%s %s\n%s' \
+                     "${MENTION}" "${HEAD}" "${PR_NUM}" "${PR_TITLE}" "${PR_URL}")
+          else
+            TEXT=$(printf '*%s*\nPR #%s %s\n%s' \
+                     "${HEAD}" "${PR_NUM}" "${PR_TITLE}" "${PR_URL}")
+          fi
+
           BODY=$(jq -n --arg text "${TEXT}" --arg key "pr-${PR_NUM}" \
                    '{text: $text, thread: {threadKey: $key}}')
 
