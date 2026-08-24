@@ -1,0 +1,86 @@
+# .github/workflows/notify-google-chat.yml
+#
+# PRのイベントをGoogle Chatへ通知する。
+# threadKey に "pr-<PR番号>" を使うため、1つのPRに関する通知はすべて
+# 同じスレッドにまとまる（作成 → 確認依頼 → 承認 → マージ）。
+#
+# 事前準備:
+#   1. Google Chat のスペース → アプリと連携 → Webhook で URL を発行
+#   2. GitHub リポジトリの Settings → Secrets and variables → Actions に
+#      GOOGLE_CHAT_WEBHOOK_URL として登録
+#
+# 注意:
+#   - スペースがスレッド対応（in-line threaded）である必要がある。
+#     2022年以前の古いグループ会話など UNTHREADED のスペースでは threadKey が無視される。
+#   - fork からのPRでは Secrets が渡されないため通知されない（社内リポジトリでは影響なし）。
+
+name: Notify Google Chat (PR)
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, review_requested, closed]
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    # 下書き(draft)のPRは通知しない。ready_for_review で初回通知する。
+    if: >-
+      github.event.pull_request.draft == false ||
+      github.event.action == 'ready_for_review'
+    steps:
+      - name: Post to Google Chat thread
+        env:
+          WEBHOOK:      ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+          EVENT_NAME:   ${{ github.event_name }}
+          ACTION:       ${{ github.event.action }}
+          PR_NUM:       ${{ github.event.pull_request.number }}
+          PR_TITLE:     ${{ github.event.pull_request.title }}
+          PR_URL:       ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR:    ${{ github.event.pull_request.user.login }}
+          PR_MERGED:    ${{ github.event.pull_request.merged }}
+          REQUESTED:    ${{ github.event.requested_reviewer.login }}
+          REVIEW_STATE: ${{ github.event.review.state }}
+          REVIEWER:     ${{ github.event.review.user.login }}
+        run: |
+          set -euo pipefail
+
+          case "${EVENT_NAME}.${ACTION}" in
+            pull_request.opened|pull_request.ready_for_review)
+              HEAD="新規PR（作成者: ${PR_AUTHOR}）"
+              ;;
+            pull_request.review_requested)
+              HEAD="確認依頼 → ${REQUESTED} さん"
+              ;;
+            pull_request.closed)
+              if [ "${PR_MERGED}" = "true" ]; then
+                HEAD="マージ完了"
+              else
+                HEAD="クローズ（未マージ）"
+              fi
+              ;;
+            pull_request_review.submitted)
+              case "${REVIEW_STATE}" in
+                approved)          HEAD="承認されました（${REVIEWER}）" ;;
+                changes_requested) HEAD="修正要求（${REVIEWER}）" ;;
+                commented)         HEAD="コメント（${REVIEWER}）" ;;
+                *)                 HEAD="レビュー（${REVIEWER}）" ;;
+              esac
+              ;;
+            *)
+              HEAD="更新"
+              ;;
+          esac
+
+          TEXT=$(printf '*%s*\nPR #%s %s\n%s' "${HEAD}" "${PR_NUM}" "${PR_TITLE}" "${PR_URL}")
+          BODY=$(jq -n --arg text "${TEXT}" --arg key "pr-${PR_NUM}" \
+                   '{text: $text, thread: {threadKey: $key}}')
+
+          curl -sS --fail-with-body -X POST \
+            "${WEBHOOK}&messageReplyOption=REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD" \
+            -H 'Content-Type: application/json' \
+            -d "${BODY}"
